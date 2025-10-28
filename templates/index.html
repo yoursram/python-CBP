@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Automation E-Commerce Price Comparison</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
+    <style>
+        :root {
+            --background-start: #E0F2FE;
+            --background-end: #EFF6FF;
+            --title-bg-start: #FEF3C7;
+            --title-bg-end: #FDE68A;
+            --button-color: #3B82F6;
+            --text-dark: #111827;
+            --text-secondary: #4B5563;
+            --card-bg: #FFFFFF;
+            --border-color: #E5E7EB;
+            --success-color: #10B981;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --border-radius: 10px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background: linear-gradient(to bottom, var(--background-start), var(--background-end));
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        h1 {
+            display: inline-block;
+            font-size: 1.8rem;
+            font-weight: 700;
+            padding: 0.8rem 1.5rem;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, var(--title-bg-start), var(--title-bg-end));
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--title-bg-end);
+        }
+        
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        #searchBox {
+            display: flex;
+            gap: 10px;
+            background: var(--card-bg);
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2.5rem;
+        }
+
+        #searchInput {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: transparent;
+        }
+        #searchInput:focus { outline: none; }
+
+        #searchButton {
+            padding: 10px 20px;
+            border: none;
+            background-color: var(--button-color);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        #searchButton:hover { background-color: #2563EB; }
+
+        .result-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-header h3 { margin: 0; font-size: 1.2rem; font-weight: 600; line-height: 1.4; }
+
+        .platform-logo {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+            margin-left: 10px;
+        }
+        
+        .card-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .card-details p { margin: 0; color: var(--text-secondary); font-size: 0.9rem; }
+
+        .card-details strong {
+            display: block;
+            color: var(--text-dark);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .price { font-size: 1.5rem !important; }
+        
+        .card-footer { margin-top: 1.5rem; text-align: right; }
+        .card-footer a { color: var(--button-color); text-decoration: none; font-weight: 600; }
+
+        .best-deal-card {
+            border-color: var(--success-color);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+            position: relative;
+        }
+        .best-deal-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: var(--success-color);
+            color: white;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        /* Skeleton Loader */
+        .skeleton-card {
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background-color: #f3f4f6;
+        }
+        .skeleton-line {
+            height: 1.2em;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            animation: pulse-bg 1.5s infinite;
+            margin-bottom: 10px;
+        }
+        @keyframes pulse-bg {
+            0% { background-color: #e5e7eb; }
+            50% { background-color: #f9fafb; }
+            100% { background-color: #e5e7eb; }
+        }
+
+        /* Chatbot Styles */
+        #chatbotButton {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--button-color);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-md);
+            z-index: 9999;
+        }
+
+        #chatbotWindow {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 300px;
+            height: 400px;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 9999;
+        }
+
+        #chatbotHeader {
+            background: var(--button-color);
+            color: white;
+            padding: 10px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #chatbotMessages { flex: 1; padding: 10px; overflow-y: auto; font-size: 0.9rem; }
+
+        #chatbotInputBox { display: flex; border-top: 1px solid var(--border-color); }
+
+        #chatbotInput {
+            flex: 1;
+            border: none;
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+        #chatbotInput:focus { outline: none; }
+
+        #chatbotSend {
+            background: var(--button-color);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            cursor: pointer;
+        }
+
+        #chatbotClose { cursor: pointer; font-size: 1.2rem; }
+
+        .chatbot-user { text-align: right; margin: 5px 0; color: var(--button-color); font-weight: 600; }
+        .chatbot-bot { text-align: left; margin: 5px 0; color: var(--text-dark); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Smart Automation E-Commerce Price Comparison</h1>
+        </header>
+
+        <div id="searchBox">
+            <input type="text" id="searchInput" placeholder="Search for any product...">
+            <button id="searchButton"><i class="fas fa-search"></i> Search</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <!-- Chatbot Button -->
+    <div id="chatbotButton">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <!-- Chatbot Window -->
+    <div id="chatbotWindow">
+        <div id="chatbotHeader">SmartBot <span id="chatbotClose">&times;</span></div>
+        <div id="chatbotMessages"></div>
+        <div id="chatbotInputBox">
+            <input type="text" id="chatbotInput" placeholder="Ask about a product...">
+            <button id="chatbotSend"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const resultsDiv = document.getElementById('results');
+
+        function getPlatformLogoUrl(platform) {
+            switch (platform.toLowerCase()) {
+                case 'amazon':
+                    return 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Amazon_icon.svg';
+                case 'flipkart':
+                    return 'https://static-assets-web.flixcart.com/www/promos/new/20150702-170000-logo-v2.svg';
+                case 'croma':
+                    return 'https://www.google.com/s2/favicons?domain=croma.com&sz=64';
+                case 'reliance digital':
+                    return 'https://www.google.com/s2/favicons?domain=reliancedigital.in&sz=64';
+                default:
+                    return '';
+            }
+        }
+
+        function createProductCard(product, isBestDeal = false) {
+            const card = document.createElement('div');
+            card.className = isBestDeal ? `result-card best-deal-card` : `result-card`;
+            const bestDealBadge = isBestDeal ? '<span class="best-deal-badge">🏆 Best Deal</span>' : '';
+            const platformLogoUrl = getPlatformLogoUrl(product.platform);
+            const logoHtml = platformLogoUrl ? `<img src="${platformLogoUrl}" alt="${product.platform} logo" class="platform-logo">` : '';
+            card.innerHTML = `
+                ${bestDealBadge}
+                <div class="card-header">
+                    <h3>${product.title}</h3>
+                    ${logoHtml}
+                </div>
+                <div class="card-details">
+                    <div><p>Price</p><strong class="price">${product.price}</strong></div>
+                    <div><p>Platform</p><strong>${product.platform}</strong></div>
+                    <div><p>Rating</p><strong>${product.rating}</strong></div>
+                </div>
+                <div class="card-footer">
+                    <a href="${product.url}" target="_blank">View on Store <i class="fas fa-arrow-right"></i></a>
+                </div>
+            `;
+            return card;
+        }
+        
+        function showSkeletonLoader() {
+            resultsDiv.innerHTML = '<h2>Searching for the best prices...</h2>';
+            for (let i = 0; i < 3; i++) {
+                const card = document.createElement('div');
+                card.className = 'skeleton-card';
+                card.innerHTML = `
+                    <div class="skeleton-line" style="width: 80%; height: 1.5em;"></div>
+                    <div class="skeleton-line" style="width: 40%; height: 2em; margin-top: 1rem;"></div>
+                    <div class="skeleton-line" style="width: 60%;"></div>
+                `;
+                resultsDiv.appendChild(card);
+            }
+        }
+        
+        function showNotFoundMessage(query) {
+            resultsDiv.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                    <h2>No Results Found</h2>
+                    <p>Sorry, we couldn't find any deals for "${query}".</p>
+                </div>
+            `;
+        }
+
+        const performSearch = async () => {
+            const query = searchInput.value.trim();
+            if (!query) {
+                alert('Please enter a product name.');
+                return;
+            }
+            showSkeletonLoader();
+            try {
+                const response = await fetch(`/search?query=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                resultsDiv.innerHTML = '';
+                if (response.ok && data.best_deal) {
+                    if (data.best_deal) {
+                        const bestDealTitle = document.createElement('h2');
+                        bestDealTitle.textContent = 'Cheapest Price Found';
+                        const bestDealCard = createProductCard(data.best_deal, true);
+                        resultsDiv.appendChild(bestDealTitle);
+                        resultsDiv.appendChild(bestDealCard);
+                    }
+                    const platforms = Object.keys(data.all_results);
+                    platforms.forEach(platform => {
+                        const platformResults = data.all_results[platform];
+                        const platformTitle = document.createElement('h2');
+                        platformTitle.textContent = `Results from ${platform}`;
+                        resultsDiv.appendChild(platformTitle);
+                        if (platformResults.length > 0) {
+                            platformResults.forEach(product => {
+                                const productCard = createProductCard(product, false);
+                                resultsDiv.appendChild(productCard);
+                            });
+                        }
+                    });
+                } else { showNotFoundMessage(query); }
+            } catch (error) {
+                showNotFoundMessage(query);
+                console.error('Fetch error:', error);
+            }
+        };
+        
+        searchButton.addEventListener('click', performSearch);
+        searchInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') performSearch();
+        });
+        window.addEventListener('load', () => searchInput.focus());
+
+        // Chatbot logic
+        const chatbotButton = document.getElementById('chatbotButton');
+        const chatbotWindow = document.getElementById('chatbotWindow');
+        const chatbotClose = document.getElementById('chatbotClose');
+        const chatbotMessages = document.getElementById('chatbotMessages');
+        const chatbotInput = document.getElementById('chatbotInput');
+        const chatbotSend = document.getElementById('chatbotSend');
+
+        chatbotButton.addEventListener('click', () => {
+            chatbotWindow.style.display = 'flex';
+        });
+
+        chatbotClose.addEventListener('click', () => {
+            chatbotWindow.style.display = 'none';
+        });
+
+        chatbotSend.addEventListener('click', sendChat);
+        chatbotInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') sendChat();
+        });
+
+        function appendMessage(message, sender) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = sender === 'user' ? 'chatbot-user' : 'chatbot-bot';
+            msgDiv.textContent = message;
+            chatbotMessages.appendChild(msgDiv);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        }
+
+        async function sendChat() {
+            const text = chatbotInput.value.trim();
+            if (!text) return;
+            appendMessage(text, 'user');
+            chatbotInput.value = '';
+            try {
+                const res = await fetch('/chatbot', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product_name: text })
+                });
+                const data = await res.json();
+                if (data.description) {
+                    appendMessage(data.description, 'bot');
+                } else {
+                    appendMessage('Sorry, I could not find details.', 'bot');
+                }
+            } catch (err) {
+                console.error(err);
+                appendMessage('Error connecting to chatbot.', 'bot');
+            }
+        }
+    </script>
+</body>
+</html>
